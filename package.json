@@ -1,0 +1,19 @@
+{
+  "name": "proyecto-x",
+  "version": "1.0.0",
+  "description": "test",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prespik/proyecto-x.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/prespik/proyecto-x/issues"
+  },
+  "homepage": "https://github.com/prespik/proyecto-x#readme"
+}
