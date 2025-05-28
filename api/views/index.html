@@ -1,0 +1,132 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Tester API Completa</title>
+</head>
+<body>
+  <h1>Tester Externo - API /api/files</h1>
+  <p><strong>Todos los endpoints requieren el header Authorization.</strong></p>
+
+  <hr>
+
+  <h2>1. Crear archivo (POST)</h2>
+  <form id="createForm">
+    Nombre: <input type="text" name="name"><br>
+    Contenido: <textarea name="content"></textarea><br>
+    <button type="submit">Crear</button>
+  </form>
+
+  <h2>2. Listar archivos (GET)</h2>
+  <button onclick="listFiles()">Listar archivos</button>
+
+  <h2>3. Obtener archivo (GET por ID)</h2>
+  ID: <input type="text" id="getFileId">
+  <button onclick="getFile()">Obtener archivo</button>
+
+  <h2>4. Actualizar archivo (PUT por ID)</h2>
+  ID: <input type="text" id="updateFileId"><br>
+  Nuevo nombre: <input type="text" id="updateName"><br>
+  Nuevo contenido: <textarea id="updateContent"></textarea><br>
+  <button onclick="updateFile()">Actualizar</button>
+
+  <h2>5. Eliminar archivo (DELETE por ID)</h2>
+  ID: <input type="text" id="deleteFileId">
+  <button onclick="deleteFile()">Eliminar</button>
+
+  <hr>
+
+  <h2>6. Subir archivos (POST /upload)</h2>
+  <form id="uploadForm" enctype="multipart/form-data">
+    Archivos: <input type="file" name="files" multiple><br>
+    Metadata JSON:<br>
+    <textarea name="metadata" rows="5" cols="50">
+{
+  "archivo1.txt": { "tipo": "texto" },
+  "archivo2.txt": { "tipo": "log" }
+}
+    </textarea><br>
+    <button type="submit">Subir</button>
+  </form>
+
+  <hr>
+  <h2>Resultado:</h2>
+  <pre id="result" style="background:#f0f0f0; padding:10px;"></pre>
+
+  <script>
+    const BASE_URL = 'http://127.0.0.1:8081/api/files';
+    const AUTH_HEADER = { 'Authorization': 'Bearer AAHltRCrq8Yz2o8vWfseuEiQUTJWmbgY9p4' };
+
+    function showResult(data) {
+      document.getElementById('result').innerText = JSON.stringify(data, null, 2);
+    }
+
+    document.getElementById('createForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const form = new FormData(e.target);
+      fetch(BASE_URL, {
+        method: 'POST',
+        headers: {
+          ...AUTH_HEADER,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: form.get('name'),
+          content: form.get('content')
+        })
+      }).then(r => r.json()).then(showResult);
+    });
+
+    function listFiles() {
+      fetch(BASE_URL, {
+        headers: AUTH_HEADER
+      }).then(r => r.json()).then(showResult);
+    }
+
+    function getFile() {
+      const id = document.getElementById('getFileId').value;
+      fetch(BASE_URL + '/' + id, {
+        headers: AUTH_HEADER
+      }).then(r => r.json()).then(showResult);
+    }
+
+    function updateFile() {
+      const id = document.getElementById('updateFileId').value;
+      fetch(BASE_URL + '/' + id, {
+        method: 'PUT',
+        headers: {
+          ...AUTH_HEADER,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: document.getElementById('updateName').value,
+          content: document.getElementById('updateContent').value
+        })
+      }).then(r => r.json()).then(showResult);
+    }
+
+    function deleteFile() {
+      const id = document.getElementById('deleteFileId').value;
+      fetch(BASE_URL + '/' + id, {
+        method: 'DELETE',
+        headers: AUTH_HEADER
+      }).then(r => r.json()).then(showResult);
+    }
+
+    document.getElementById("uploadForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+
+      fetch(BASE_URL + '/upload', {
+        method: "POST",
+        headers: AUTH_HEADER,
+        body: formData
+      })
+      .then(r => r.json())
+      .then(showResult);
+    });
+  </script>
+</body>
+</html>
